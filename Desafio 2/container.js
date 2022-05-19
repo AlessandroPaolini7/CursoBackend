@@ -1,5 +1,3 @@
-console.clear();
-
 const fs = require ('fs');
 
 class Container{
@@ -15,8 +13,8 @@ class Container{
                     console.log(err);
                 };
             });
-            Container.id = this.productos.length;
-            console.log(Container.id);
+            this.id = this.productos.length;
+            console.log(this.id);
         }
     };
         
@@ -25,7 +23,7 @@ class Container{
         Container.id++;
         producto.id = Container.id;
         this.productos.push(producto);
-        fs.promises.writeFile(this.fileName, JSON.stringify(this.productos,null,2));
+        fs.promises.writeFile(this.fileName, JSON.stringify(this.productos));
         return Container.id;
     }
 
@@ -47,11 +45,12 @@ class Container{
 const gestor = new Container('productos.txt');
 
 const main = async () => {
-    const id1 = await gestor.save({ title: "Regla", price: 60.00 });
-    const id2 = await gestor.save({ title: "Goma", price: 35.00 });
-    const id3 = await gestor.save({ title: "Lapicera", price: 50.00 });
+    const id1 = await gestor.save({ "title": "Regla", "price": 60.00 });
+    const id2 = await gestor.save({ "title": "Goma", "price": 35.00 });
+    const id3 = await gestor.save({ "title": "Lapicera", "price": 50.00 });
 
     console.log(id1,id2,id3);
+    //1, 2, 3
 
     const todos = await gestor.getAll();
 
