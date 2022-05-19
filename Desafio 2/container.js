@@ -24,7 +24,7 @@ class Container{
         producto.id = Container.id;
         this.productos.push(producto);
         fs.promises.writeFile(this.fileName, JSON.stringify(this.productos));
-        return Container.id;
+        return producto.id;
     }
 
     getAll(){
@@ -38,7 +38,7 @@ class Container{
     delete(id){
         let index = this.productos.findIndex(producto => producto.id == id);
         this.productos.splice(index,1);
-        fs.promises.writeFile(this.fileName, JSON.stringify(this.productos));
+        fs.promises.writeFile(this.fileName, JSON.stringify(this.productos,null,2));
     }
 }
 
