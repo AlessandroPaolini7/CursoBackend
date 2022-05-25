@@ -75,3 +75,4 @@ const main = async () => {
 }
 
 main();
+module.exports = Container;
