@@ -8,7 +8,7 @@ server.on('error', err => console.log(`Error: ${err}`));
 const productos = new Contenedor('productos.txt');
 
 app.get('/', async (req, res) => {
-    await response.send('Cambia la ruta por /productos o /productoRandom');
+    await res.send('Cambia la ruta por /productos o /productoRandom');
 });
 
 
