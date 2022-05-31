@@ -6,19 +6,22 @@ class Contenedor {
         this.arr = [];
     }
 
-    async getData() {
-        const data = await fs.promises.readFile(this._filename, "utf-8");
-        return data;
-    }
+
 
 
     async save(producto) {
         try {
-            const arregloProd = await this.getData();
-            const arregloParseado = JSON.parse(arregloProd);
-            producto.id = arregloParseado.length + 1;
-            arregloParseado.push(producto);
-            await fs.promises.writeFile(this._filename, JSON.stringify(arregloParseado));
+            const readFile = await this.getAll();
+            if (!readFile) {
+                producto.id = await this.arr.length++;
+                this.arr.push(producto);
+                fs.promises.writeFile(this.fileName, JSON.stringify(this.arr, null, 2));
+                return producto.id;
+            }
+            this.arr = readFile;
+            producto.id = await this.arr.length++;
+            this.arr.push(producto);
+            fs.promises.writeFile(this.fileName, JSON.stringify(this.arr, null, 2));
             return producto.id;
         } catch (err) {
             console.log(err);
