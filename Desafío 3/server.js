@@ -14,11 +14,19 @@ app.get('/', async (req, res) => {
 
 app.get('/productos', async (req, res) => {
     const todos = await productos.getAll();
-    res.send(todos);
-})
+    if (todos) { 
+        res.send(todos);
+    } else {
+        res.status(500).send('No se encontraron productos');
+    }
+});
 
 app.get('/productoRandom', async (req, res) => {
     const productoCualq = await productos.getById(Math.floor(Math.random() * productos.getAll().length));;
-    res.send(productoCualq);
+    if(productoCualq){
+        res.send(productoCualq);
+    }else {
+        res.status(500).send('No se encontraron productos');
+    }
 })
 
