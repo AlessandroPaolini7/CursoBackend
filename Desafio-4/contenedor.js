@@ -1,100 +1,107 @@
-const fs = require('fs');
+const fs = require("fs");
 
 class Contenedor {
     constructor(fileName) {
-        this.fileName = fileName;
-        this.arr = [];
+        this._filename = fileName;
     }
 
-
-
-
-    async save(producto) {
-        try {
-            const readFile = await this.getAll();
-            if (!readFile) {
-                producto.id = this.arr.length++;
-                this.arr.push(producto);
-                fs.promises.writeFile(this.fileName, JSON.stringify(this.arr, null, 2));
-                return producto.id;
-            }
-            this.arr = readFile;
-            producto.id = this.arr.length++;
-            this.arr.push(producto);
-            fs.promises.writeFile(this.fileName, JSON.stringify(this.arr, null, 2));
-            return producto.id;
-        } catch (err) {
-            console.log(err);
-        }
-    }
 
 
     async getById(id) {
-        try {
-            this.arr = await this.getAll();
-            const prod = this.arr.find(producto => producto.id === Number(id));
-            return prod ? prod : null;
-        } catch (err) {
-            console.log(err);
-        }
+    id = Number(id);
+    try {
+    const arreglo = await this.getData();
+    const arregloParseado = JSON.parse(arreglo);
+
+    return arregloParseado.find((producto) => producto.id === id);
+    } catch (error) {
+        console.log(error);
     }
-
-
-    async getAll() {
-        try {
-            const arr = await fs.promises.readFile(this.fileName, 'utf-8');
-            //Acá hago el parseo del JSON, y no en el constructor porque sino no funciona.
-            const arregloParseado = JSON.parse(arr);
-            return arregloParseado;
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
+}
 
     async deleteById(id) {
         try {
-            this.arr = await this.getAll();
-            this.arr = this.arr.filter(producto => producto.id != id);
-            fs.promises.writeFile(this.fileName, JSON.stringify(this.arr, null, 2));
-        } catch (err) {
-            console.log(err);
-        }
-    }
+            id = Number(id);
+            const arreglo = await this.getData();
+            const arregloParseado = JSON.parse(arreglo);
+            const objectIdToBeRemoved = arregloParseado.find(
+                (producto) => producto.id === id
+            );
 
-
-    async deleteAll() {
-        try {
-            this.arr = await this.getAll();
-            this.arr = [];
-            fs.promises.writeFile(this.fileName, JSON.stringify(this.arr, null, 2));
-        } catch (err) {
-            console.log(err);
+            if (objectIdToBeRemoved) {
+                const index = arregloParseado.indexOf(objectIdToBeRemoved);
+                arregloParseado.splice(index, 1);
+                await fs.promises.writeFile(this._filename, JSON.stringify(arregloParseado));
+                return true;
+            } else {
+                console.log(`ID ${id} does not exist in the file`);
+                return null;
+            }
+        } catch (error) {
+        console.log(
+            `Error Code: ${error.code} | There was an error when trying to delete an element by its ID (${id})`
+        );
         }
     }
 
     async updateById(id, newData) {
-        try {
-            id = Number(id);
-            const arregloProd = await this.getData();
-            const arregloParseado = JSON.parse(arregloProd);
-            const productoaActualizar = arregloParseado.find(
+    try {
+        id = Number(id);
+        const arreglo = await this.getData();
+        const arregloParseado = JSON.parse(arreglo);
+        const objectIdToBeUpdated = arregloParseado.find(
             (producto) => producto.id === id
         );
-        if (productoaActualizar) {
-            const index = arregloParseado.indexOf(productoaActualizar);
-            const {title, price} = newData;
+        if (objectIdToBeUpdated) {
+            const index = arregloParseado.indexOf(objectIdToBeUpdated);
+            const {title, price, thumbnail} = newData;
+
             arregloParseado[index]['title'] = title;
             arregloParseado[index]['price'] = price;
-            await fs.promises.writeFile(this._filename, JSON.stringify(arregloParseado, null, 2));
+            arregloParseado[index]['thumbnail'] = thumbnail;
+            await fs.promises.writeFile(this._filename, JSON.stringify(arregloParseado));
             return true;
-            } else {
-            console.log(`El id no existe en el archivo`);
+        } else {
+            console.log(`ID ${id} does not exist in the file`);
             return null;
         }
-        } catch (err) {
-            console.log(err);
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+    async save(object) {
+        try {
+            const arreglo = await this.getData();
+            const arregloParseado = JSON.parse(arreglo);
+
+            object.id = arregloParseado.length + 1;
+            arregloParseado.push(object);
+
+            await fs.promises.writeFile(this._filename, JSON.stringify(arregloParseado));
+            return object.id;
+        } catch (error) {
+        console.log(error);
         }
+    }
+
+    async deleteAll() {
+        try {
+            await this._createEmptyFile();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async getData() {
+        const arreglo = await fs.promises.readFile(this._filename, "utf-8");
+        return arreglo;
+    }
+
+    async getAll() {
+        const arreglo = await this.getData();
+        return JSON.parse(arreglo);
     }
 }
 module.exports = Contenedor;
