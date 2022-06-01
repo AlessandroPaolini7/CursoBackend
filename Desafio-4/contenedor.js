@@ -24,23 +24,21 @@ class Contenedor {
             id = Number(id);
             const arreglo = await this.getData();
             const arregloParseado = JSON.parse(arreglo);
-            const objectIdToBeRemoved = arregloParseado.find(
+            const productoABorrar = arregloParseado.find(
                 (producto) => producto.id === id
             );
 
-            if (objectIdToBeRemoved) {
-                const index = arregloParseado.indexOf(objectIdToBeRemoved);
+            if (productoABorrar) {
+                const index = arregloParseado.indexOf(productoABorrar);
                 arregloParseado.splice(index, 1);
                 await fs.promises.writeFile(this._filename, JSON.stringify(arregloParseado));
                 return true;
             } else {
-                console.log(`ID ${id} does not exist in the file`);
+                console.log(`El id no existe en el archivo`);
                 return null;
             }
         } catch (error) {
-        console.log(
-            `Error Code: ${error.code} | There was an error when trying to delete an element by its ID (${id})`
-        );
+        console.log(error);
         }
     }
 
@@ -49,20 +47,18 @@ class Contenedor {
         id = Number(id);
         const arreglo = await this.getData();
         const arregloParseado = JSON.parse(arreglo);
-        const objectIdToBeUpdated = arregloParseado.find(
+        const productoAActualizar = arregloParseado.find(
             (producto) => producto.id === id
         );
-        if (objectIdToBeUpdated) {
-            const index = arregloParseado.indexOf(objectIdToBeUpdated);
+        if (productoAActualizar) {
+            const index = arregloParseado.indexOf(productoAActualizar);
             const {title, price, thumbnail} = newData;
-
             arregloParseado[index]['title'] = title;
             arregloParseado[index]['price'] = price;
-            arregloParseado[index]['thumbnail'] = thumbnail;
             await fs.promises.writeFile(this._filename, JSON.stringify(arregloParseado));
             return true;
         } else {
-            console.log(`ID ${id} does not exist in the file`);
+            console.log(`El id no existe en el archivo`);
             return null;
         }
 
