@@ -13,13 +13,13 @@ class Contenedor {
         try {
             const readFile = await this.getAll();
             if (!readFile) {
-                producto.id = await this.arr.length++;
+                producto.id = this.arr.length++;
                 this.arr.push(producto);
                 fs.promises.writeFile(this.fileName, JSON.stringify(this.arr, null, 2));
                 return producto.id;
             }
             this.arr = readFile;
-            producto.id = await this.arr.length++;
+            producto.id = this.arr.length++;
             this.arr.push(producto);
             fs.promises.writeFile(this.fileName, JSON.stringify(this.arr, null, 2));
             return producto.id;
@@ -76,20 +76,20 @@ class Contenedor {
     async updateById(id, newData) {
         try {
             id = Number(id);
-            const data = await this.getData();
-            const parsedData = JSON.parse(data);
-            const objectIdToBeUpdated = parsedData.find(
+            const arregloProd = await this.getData();
+            const arregloParseado = JSON.parse(arregloProd);
+            const productoaActualizar = arregloParseado.find(
             (producto) => producto.id === id
         );
-        if (objectIdToBeUpdated) {
-            const index = parsedData.indexOf(objectIdToBeUpdated);
+        if (productoaActualizar) {
+            const index = arregloParseado.indexOf(productoaActualizar);
             const {title, price} = newData;
-            parsedData[index]['title'] = title;
-            parsedData[index]['price'] = price;
-            await fs.promises.writeFile(this._filename, JSON.stringify(parsedData));
+            arregloParseado[index]['title'] = title;
+            arregloParseado[index]['price'] = price;
+            await fs.promises.writeFile(this._filename, JSON.stringify(arregloParseado, null, 2));
             return true;
             } else {
-            console.log(`ID ${id} does not exist in the file`);
+            console.log(`El id no existe en el archivo`);
             return null;
         }
         } catch (err) {
