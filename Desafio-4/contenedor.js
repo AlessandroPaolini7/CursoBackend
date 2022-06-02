@@ -52,7 +52,7 @@ class Contenedor {
         );
         if (productoAActualizar) {
             const index = arregloParseado.indexOf(productoAActualizar);
-            const {title, price, thumbnail} = newData;
+            const {title, price} = newData;
             arregloParseado[index]['title'] = title;
             arregloParseado[index]['price'] = price;
             await fs.promises.writeFile(this._filename, JSON.stringify(arregloParseado));
@@ -67,16 +67,15 @@ class Contenedor {
     }
 }
 
-    async save(object) {
+    async save(producto) {
         try {
+            producto.id = 0;
             const arreglo = await this.getData();
             const arregloParseado = JSON.parse(arreglo);
-
-            object.id = arregloParseado.length + 1;
-            arregloParseado.push(object);
-
+            producto.id = arregloParseado.length + 1;
+            arregloParseado.push(producto);
             await fs.promises.writeFile(this._filename, JSON.stringify(arregloParseado));
-            return object.id;
+            return producto.id;
         } catch (error) {
         console.log(error);
         }
